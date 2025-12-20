@@ -47,7 +47,14 @@
     top-edge : "baseline",
 
     hyphenate : false,
+    spacing: 110%,
+    // tracking: 0.12pt,
   )
+
+  show emph: it => {
+    set text(spacing: 100%)
+    it
+  } 
 
   set par(
     // п. 2.1.1 : Отступ.
@@ -68,6 +75,19 @@
   //   stroke : black,
   // 
   //
+  
+  show raw.where(block: true): it => {
+    set text(
+      font: "Courier New",
+      size: 10pt,
+    )
+    set par(leading: 1em)  // межстрочный интервал
+    block(
+      inset: 1em,            // отступы
+      width: 100%,
+      it
+    )
+  }
 
 
 
@@ -79,10 +99,10 @@
 
   show heading.where(level:1): body => {
     set text(
-      size: 14pt,
+      size: 16pt,
       hyphenate : false,
     )
-    
+
     set par(
       justify: false
     )
@@ -193,8 +213,8 @@
 
   show enum: a => {
     let items = a.children.enumerate().map(
-      ((index,item)) => 
-        numbering(a.numbering, index+1) + h(0.5em) + item.body + parbreak()
+      ((index,item)) =>
+        numbering(a.numbering, index+1) + h(0.25em) + item.body + parbreak()
     )
     parbreak()+items.join()
   }
@@ -206,11 +226,10 @@
 
   show list: a => {
     let items = a.children.map(
-      (item) =>
-        a.marker + h(0.5em) + item.body + parbreak()
+      (item) => a.marker + h(0.25em) + item.body + parbreak()
     )
     
-   parbreak()+items.join()
+    parbreak() + items.join()
   }
 
 
@@ -261,7 +280,7 @@
       set align(left)
 
       show figure.caption: b => context {
-        set text(hyphenate: false)
+        set text(hyphenate: false, spacing: 100%)
         let counter = counter(figure.where(kind:table)).display()
         let counter_width = measure(counter).width
         let supplement_width = measure(b.supplement + b.separator).width
@@ -292,17 +311,8 @@
   })
   
   show math.equation : set block(above : 1.55em, below : 2.3em)
-  show math.equation : set text(font: "TeX Gyre Termes Math", style : "italic")
+  show math.equation : set text(font: "Times New Roman", style : "italic")
 
-
-  // Code block
-  show raw.where(block: true): it => {
-    set text(font: "Courier New", size: 10pt)
-    set par(first-line-indent: 12.5mm)
-    block(
-      it
-    )
-  }
 
 
 
@@ -330,13 +340,14 @@
 
   show outline: it => {
     show heading: body => {
-      set text(size:14pt, hyphenate:false)
+      set text(size:16pt, hyphenate:false)
       set align(center)
-      block(upper(body.body), spacing : 2.3em)
+      block(upper(body.body), spacing : 2em)
     }
     set text(
       hyphenate: false
     )
+    // set par(leading: 1em) //междустрочный интервал
     it
   }
 
@@ -350,7 +361,7 @@
 
   show bibliography: it => {
     show heading : h => {
-      set text(size:14pt, hyphenate:false)
+      set text(size:16pt, hyphenate:false)
       set align(center)
 
       pagebreak(weak:true) 
@@ -358,18 +369,18 @@
       v(1.15em)
     }
 
+    show regex("\\[(\\d+)\\]\\s"): match => {
+      match.text.trim() + h(0.4em)
+    }
+
     // hacky but works
     show block:  it => {
       par(it.body)
     }
 
-    set text(hyphenate: true)
-
-
     set par(
       first-line-indent: (amount : 12.5mm, all:true),
     )
-
     it
   }
 
@@ -401,11 +412,11 @@
     [где],
 
     grid(
-      columns : (auto, 1fr),
-      align : (right, left),
+      columns : (auto, 0.15em, 1fr),
+      align: (left, center, left),
       rows : auto,
       column-gutter : 0.5em,
-      row-gutter:1.15em,
+      row-gutter: 1.15em,
       ..args
     )
   )
@@ -468,7 +479,7 @@
 #let heading_unnumbered(body) = {
   show heading: it => {
     set align(center)
-    set text(size:14pt, weight:"semibold", hyphenate:false)
+    set text(size:16pt, weight:"semibold", hyphenate:false)
     block(upper(it.body), spacing : 2.3em)
   }
   heading(body, numbering:none)
@@ -477,13 +488,17 @@
 
 
 #let appendix(..args, body) = context {
+  counter(figure.where(kind:image)).update(0)
+  counter(figure.where(kind:table)).update(0)
+
   let cnt = counter("appendix")
   let cnt_disp = upper(ru_alph.at(cnt.get().at(0)))
   let atype = args.at("type")
   let aname = args.at("title")
+  let aname_outline = args.at("title-outline", default: aname)
 
   show heading: it =>  {
-    set text(size:14pt, hyphenate:false)
+    set text(size:16pt, hyphenate:false)
     set align(center)
     pagebreak(weak:true)
     block([ПРИЛОЖЕНИЕ #cnt_disp \ (#atype) \ #aname], below:2.3em)
@@ -494,13 +509,18 @@
      heading_counter + "."  + str(n)
   })
 
-  heading(
-    numbering : none,
-    [Приложение #cnt_disp (#atype) #aname]
-  )
+  heading(outlined:false,[])
 
+  {
+      show figure: none;
+      show linebreak: " ";
+      [#figure(
+              kind:"hidden_appendix",
+              supplement : [Приложение],
+              numbering: (..)=>cnt_disp,
+              caption: [(#atype) #aname_outline])[]<appendix>]
+  }
   body
 
   counter("appendix").step()
-
 }

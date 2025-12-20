@@ -1,9 +1,10 @@
 #import "stp/stp.typ"
 #show: stp.STP2024
 
-#include "title.typ"
+#include "lab_title.typ"
 
 #outline()
+#outline(title:none,target:label("appendix"))
 #pagebreak()
 
 = Постановка задачи
