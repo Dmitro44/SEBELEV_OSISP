@@ -1,15 +1,15 @@
 #!/bin/bash
 
 if [ -z "$1" ]; then
-    echo "Ошибка: Не указан входной файл." >&2
-    echo "Использование: $0 <путь_к_файлу.csv>" >&2
+    echo "Error: Input file not specified." >&2
+    echo "Usage: $0 <path_to_file.csv>" >&2
     exit 1
 fi
 
 INPUT_FILE="$1"
 
 if [ ! -f "$INPUT_FILE" ]; then
-    echo "Ошибка: Файл '$INPUT_FILE' не найден." >&2
+    echo "Error: File '$INPUT_FILE' not found." >&2
     exit 1
 fi
 
