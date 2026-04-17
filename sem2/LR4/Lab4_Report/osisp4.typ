@@ -53,7 +53,7 @@
 #stp2024.appendix(title: [Листинг программного кода], type: [обязательное],
 [
   #stp2024.listing[main.c][
-```c
+```
 #include "dictionary.h"
 #include "filter.h"
 #include <stdbool.h>
@@ -156,9 +156,10 @@ int main(int argc, char *argv[]) {
   ]
   
   #stp2024.listing[filter.c][
-```c
+```
 #include "filter.h"
 #include <ctype.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -192,9 +193,9 @@ char *filter_line(const char *line, Dictionary *dict) {
             word[word_len] = '\0';
 
             if (dict_is_forbidden(dict, word)) {
-                result[res_i++] = '*';
-                result[res_i++] = '*';
-                result[res_i++] = '*';
+                for (size_t j = 0; j < word_len; j++) {
+                    result[res_i++] = '*';
+                }
             } else {
                 for (size_t j = 0; j < word_len; j++) {
                     result[res_i++] = word[j];
