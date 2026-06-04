@@ -1,0 +1,6 @@
+tests/mock_fs/root_file.txt-38-1778135001-173229
+tests/mock_fs/dir1/file1.txt-65-1778135001-173230
+tests/mock_fs/dir1/file2.txt-1-1778135001-173230
+tests/mock_fs/dir3/nested/deeper/file5.txt-91-1778135001-173233
+tests/mock_fs/dir2/file4.txt-98-1778135001-173234
+tests/mock_fs/dir2/subdir1/file3.txt-98-1778135001-173235
